@@ -21,16 +21,16 @@ func init() {
 	flag.StringVar(&addr, "addr", "localhost:3721", "The address of grpc server address listening")
 
 	log.SetFormatter(&log.TextFormatter{
-	    FullTimestamp:   true,
-	    TimestampFormat: "2006-01-02 15:04:05",
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
 	})
 	log.SetLevel(log.DebugLevel)
 }
 
 func newRouter() *mux.Router {
 	handler := web.NewHandler(addr)
-	routes  := handler.GetRoutes()
-	router  := mux.NewRouter()
+	routes := handler.GetRoutes()
+	router := mux.NewRouter()
 	for _, route := range routes {
 		router.Path(route.Path).Handler(route.Handler).Methods(route.Method)
 	}

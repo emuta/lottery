@@ -1,18 +1,17 @@
 package web
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-	
 
+	"github.com/golang/protobuf/ptypes"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"github.com/golang/protobuf/ptypes"
 
 	pb "lottery/ssc/cqssc/proto"
 )
@@ -362,91 +361,91 @@ func (h *Handler) ListTerm(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	/*
-	int64 id = 1;
-    string code = 2;
-    google.protobuf.Timestamp start_from = 3;
-    google.protobuf.Timestamp end_to = 4;
-    int32 limit = 5;
-    int32 offset = 6;
-    string order_by = 7;
-    */
-    ps := h.Params(r)
-    var req pb.FindTermReq
+		int64 id = 1;
+	    string code = 2;
+	    google.protobuf.Timestamp start_from = 3;
+	    google.protobuf.Timestamp end_to = 4;
+	    int32 limit = 5;
+	    int32 offset = 6;
+	    string order_by = 7;
+	*/
+	ps := h.Params(r)
+	var req pb.FindTermReq
 
-    if id, ok := ps["id"]; ok {
-    	v, err := strconv.ParseInt(id, 10, 64)
-    	if err != nil {
-    		log.Error(err)
-    		h.Error(w, err, 400)
-    	}
-    	req.Id = v
-    }
+	if id, ok := ps["id"]; ok {
+		v, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			log.Error(err)
+			h.Error(w, err, 400)
+		}
+		req.Id = v
+	}
 
-    if code, ok := ps["code"]; ok {
-    	req.Code = code
-    }
+	if code, ok := ps["code"]; ok {
+		req.Code = code
+	}
 
-    if startFrom, ok := ps["start_from"]; ok {
-    	t, err := time.Parse(TimeFormat, startFrom)
-    	if err != nil {
-    		if err != nil {
-    			log.Error(err)
-    			h.Error(w, err, 400)
-    		}
-    	}
+	if startFrom, ok := ps["start_from"]; ok {
+		t, err := time.Parse(TimeFormat, startFrom)
+		if err != nil {
+			if err != nil {
+				log.Error(err)
+				h.Error(w, err, 400)
+			}
+		}
 
-    	pbt, err := ptypes.TimestampProto(t)
-    	if err != nil {
-    		if err != nil {
-    			log.Error(err)
-    			h.Error(w, err, 400)
-    		}
-    	}
-    	req.StartFrom = pbt
-    }
+		pbt, err := ptypes.TimestampProto(t)
+		if err != nil {
+			if err != nil {
+				log.Error(err)
+				h.Error(w, err, 400)
+			}
+		}
+		req.StartFrom = pbt
+	}
 
-    if endTo, ok := ps["end_to"]; ok {
-    	t, err := time.Parse(TimeFormat, endTo)
-    	if err != nil {
-    		if err != nil {
-    			log.Error(err)
-    			h.Error(w, err, 400)
-    		}
-    	}
-    	pbt, err := ptypes.TimestampProto(t)
-    	if err != nil {
-    		if err != nil {
-    			log.Error(err)
-    			h.Error(w, err, 400)
-    		}
-    	}
-    	req.EndTo = pbt
-    }
+	if endTo, ok := ps["end_to"]; ok {
+		t, err := time.Parse(TimeFormat, endTo)
+		if err != nil {
+			if err != nil {
+				log.Error(err)
+				h.Error(w, err, 400)
+			}
+		}
+		pbt, err := ptypes.TimestampProto(t)
+		if err != nil {
+			if err != nil {
+				log.Error(err)
+				h.Error(w, err, 400)
+			}
+		}
+		req.EndTo = pbt
+	}
 
-    if limit, ok := ps["limit"]; ok {
-    	v, err := strconv.ParseInt(limit, 10, 64)
-    	if err != nil {
-    		log.Error(err)
-    		h.Error(w, err, 400)
-    	}
-    	req.Limit = int32(v)
-    }
+	if limit, ok := ps["limit"]; ok {
+		v, err := strconv.ParseInt(limit, 10, 64)
+		if err != nil {
+			log.Error(err)
+			h.Error(w, err, 400)
+		}
+		req.Limit = int32(v)
+	}
 
-    if offset, ok := ps["offset"]; ok {
-    	v, err := strconv.ParseInt(offset, 10, 64)
-    	if err != nil {
-    		log.Error(err)
-    		h.Error(w, err, 400)
-    	}
-    	req.Offset = int32(v)
-    }
+	if offset, ok := ps["offset"]; ok {
+		v, err := strconv.ParseInt(offset, 10, 64)
+		if err != nil {
+			log.Error(err)
+			h.Error(w, err, 400)
+		}
+		req.Offset = int32(v)
+	}
 
-    if orderBy, ok := ps["order_by"]; ok {
-    	req.OrderBy = orderBy
-    }
+	if orderBy, ok := ps["order_by"]; ok {
+		req.OrderBy = orderBy
+	}
 
-    resp, err := h.client.FindTerm(r.Context(), &req)
-    if err != nil {
+	resp, err := h.client.FindTerm(r.Context(), &req)
+	if err != nil {
 		h.Error(w, err, 500)
 		return
 	}
